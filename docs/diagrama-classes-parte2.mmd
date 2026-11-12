@@ -1,0 +1,180 @@
+---
+title: Diagrama de Classes UML - Parte 2 de 2 - Itens, combate e fluxo do jogo
+config:
+  theme: base
+  layout: elk
+  fontFamily: Arial, Helvetica, sans-serif
+  themeVariables:
+    fontFamily: Arial, Helvetica, sans-serif
+    fontSize: 14px
+    lineColor: '#1f2937'
+    primaryTextColor: '#1f2937'
+---
+classDiagram
+    direction TB
+
+    %% ===== pacote rpg =====
+    class Main {
+        +main(String[] args) void$
+    }
+    class Jogo {
+        -PERCENTUAL_CURA_DESCANSO : double$
+        -ENERGIA_DESCANSO : int$
+        -CURA_INICIAL : int$
+        -ENERGIA_INICIAL : int$
+        -ui : InterfaceJogo
+        -fases : List~Fase~
+        +Jogo(InterfaceJogo ui, List~Fase~ fases)
+        +iniciar() void
+        -criarPersonagem() Personagem
+        -entregarItensIniciais(Personagem jogador) void
+        -receberRecompensas(Personagem jogador, Fase fase) void
+        -descansar(Personagem jogador) void
+    }
+    class Fase {
+        <<record>>
+        -inimigo : Oponente
+        -recompensas : List~Item~
+        +inimigo() Oponente
+        +recompensas() List~Item~
+    }
+    class FabricaDeFases {
+        -FabricaDeFases()
+        +criarFases() List~Fase~$
+    }
+
+    %% ===== pacote rpg.combate =====
+    class Combate {
+        -ENERGIA_POR_TURNO : int$
+        -jogador : Personagem
+        -oponente : Oponente
+        -ui : InterfaceJogo
+        +Combate(Personagem jogador, Oponente oponente, InterfaceJogo ui)
+        +executar() boolean
+        -mostrarStatus() void
+        -barra(int atual, int maximo) String
+        -turnoDoJogador() void
+        -menuHabilidades() boolean
+        -menuItens() boolean
+    }
+
+    %% ===== pacote rpg.itens =====
+    class Item {
+        <<interface>>
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class PocaoDeCura {
+        -cura : int
+        +PocaoDeCura(int cura)
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class PocaoDeEnergia {
+        -energia : int
+        +PocaoDeEnergia(int energia)
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class Equipamento {
+        -nome : String
+        -bonusAtaque : int
+        -bonusDefesa : int
+        +Equipamento(String nome, int bonusAtaque, int bonusDefesa)
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class Inventario {
+        -itens : List~Item~
+        +adicionar(Item item) void
+        +remover(int indice) Item
+        +estaVazio() boolean
+        +listar() List~Item~
+    }
+
+    %% ===== pacote rpg.ui =====
+    class InterfaceJogo {
+        <<interface>>
+        +mostrar(String mensagem) void
+        +lerTexto(String pergunta) String
+        +lerOpcao(String pergunta, int min, int max) int
+    }
+    class ConsoleUI {
+        -scanner : Scanner
+        -saida : PrintStream
+        +mostrar(String mensagem) void
+        +lerTexto(String pergunta) String
+        +lerOpcao(String pergunta, int min, int max) int
+        -perguntar(String pergunta) String
+    }
+
+    %% ===== classes da Parte 1 (só o nome; detalhes no diagrama da Parte 1) =====
+    class Personagem {
+        <<abstract>>
+    }
+    class Oponente {
+        <<interface>>
+    }
+    class Habilidade {
+        <<interface>>
+    }
+    class HabilidadeDeDano
+    class Inimigo
+    class FabricaDePersonagens
+
+    %% ===== cores por tipo =====
+    style Main fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style Jogo fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style Fase fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style FabricaDeFases fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style Combate fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style Item fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style PocaoDeCura fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style PocaoDeEnergia fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style Equipamento fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style Inventario fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style InterfaceJogo fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style ConsoleUI fill:#f1f5f9,stroke:#94a3b8,stroke-width:2px,color:#1f2937
+    %% classes da Parte 1: tracejadas e esmaecidas
+    style Personagem fill:#fdf4ff,stroke:#d946ef,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+    style Oponente fill:#eef2ff,stroke:#818cf8,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+    style Habilidade fill:#eef2ff,stroke:#818cf8,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+    style HabilidadeDeDano fill:#fefce8,stroke:#eab308,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+    style Inimigo fill:#ecfeff,stroke:#22d3ee,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+    style FabricaDePersonagens fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+
+    %% ===== relacionamentos =====
+    Item <|.. PocaoDeCura : implementa
+    Item <|.. PocaoDeEnergia : implementa
+    Item <|.. Equipamento : implementa
+    InterfaceJogo <|.. ConsoleUI : implementa
+    Inventario o-- Item : contém
+    Fase o-- Oponente : contém
+    Fase o-- Item : contém
+    Item ..> Personagem : usa
+    Main ..> Jogo : usa
+    Main ..> FabricaDeFases : usa
+    Main ..> ConsoleUI : cria
+    Main ..> InterfaceJogo : usa
+    Jogo ..> InterfaceJogo : usa
+    Jogo ..> Fase : usa
+    Jogo ..> Combate : usa
+    Jogo ..> FabricaDePersonagens : usa
+    Jogo ..> Personagem : usa
+    Jogo ..> PocaoDeCura : cria
+    Jogo ..> PocaoDeEnergia : cria
+    Combate ..> Personagem : usa
+    Combate ..> Oponente : usa
+    Combate ..> InterfaceJogo : usa
+    Combate ..> Habilidade : usa
+    Combate ..> Item : usa
+    FabricaDeFases ..> Fase : cria
+    FabricaDeFases ..> Inimigo : cria
+    FabricaDeFases ..> HabilidadeDeDano : cria
+    FabricaDeFases ..> Equipamento : cria
+    FabricaDeFases ..> PocaoDeCura : cria
+    FabricaDeFases ..> PocaoDeEnergia : cria
