@@ -1,0 +1,248 @@
+@startuml
+title Diagrama de Classes UML - RPG em Console
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+left to right direction
+
+package rpg.combate {
+    interface Atacante {
+        +getNome(): String
+        +getAtaque(): int
+    }
+    interface Alvo {
+        +getNome(): String
+        +getVida(): int
+        +getVidaMaxima(): int
+        +estaVivo(): boolean
+        +receberDano(danoBruto: int): int
+    }
+    interface Oponente {
+        +agir(alvo: Alvo): String
+    }
+    class Combate {
+        {static} -ENERGIA_POR_TURNO: int = 4
+        -jogador: Personagem
+        -oponente: Oponente
+        -ui: InterfaceJogo
+        --
+        +Combate(jogador: Personagem, oponente: Oponente, ui: InterfaceJogo)
+        +executar(): boolean
+        -mostrarStatus(): void
+        -barra(atual: int, maximo: int): String
+        -turnoDoJogador(): void
+        -menuHabilidades(): boolean
+        -menuItens(): boolean
+    }
+}
+
+package rpg.habilidades {
+    interface Habilidade {
+        +getNome(): String
+        +getCusto(): int
+        +usar(usuario: Atacante, alvo: Alvo): String
+    }
+    class HabilidadeDeDano {
+        -nome: String {readOnly}
+        -custo: int {readOnly}
+        -multiplicador: double {readOnly}
+        -golpes: int {readOnly}
+        --
+        +HabilidadeDeDano(nome: String, custo: int, multiplicador: double, golpes: int)
+        +getNome(): String
+        +getCusto(): int
+        +usar(usuario: Atacante, alvo: Alvo): String
+    }
+}
+
+package rpg.itens {
+    interface Item {
+        +getNome(): String
+        +getDescricao(): String
+        +usar(dono: Personagem): String
+    }
+    class PocaoDeCura {
+        -cura: int {readOnly}
+        --
+        +PocaoDeCura(cura: int)
+        +getNome(): String
+        +getDescricao(): String
+        +usar(dono: Personagem): String
+    }
+    class PocaoDeEnergia {
+        -energia: int {readOnly}
+        --
+        +PocaoDeEnergia(energia: int)
+        +getNome(): String
+        +getDescricao(): String
+        +usar(dono: Personagem): String
+    }
+    class Equipamento {
+        -nome: String {readOnly}
+        -bonusAtaque: int {readOnly}
+        -bonusDefesa: int {readOnly}
+        --
+        +Equipamento(nome: String, bonusAtaque: int, bonusDefesa: int)
+        +getNome(): String
+        +getDescricao(): String
+        +usar(dono: Personagem): String
+    }
+    class Inventario {
+        -itens: List<Item> {readOnly}
+        --
+        +adicionar(item: Item): void
+        +remover(indice: int): Item
+        +estaVazio(): boolean
+        +listar(): List<Item>
+    }
+}
+
+package rpg.personagens {
+    abstract class Combatente {
+        -nome: String {readOnly}
+        -vidaMaxima: int {readOnly}
+        -vida: int
+        -ataque: int
+        -defesa: int
+        --
+        #Combatente(nome: String, vida: int, ataque: int, defesa: int)
+        +getNome(): String
+        +getVida(): int
+        +getVidaMaxima(): int
+        +getAtaque(): int
+        +getDefesa(): int
+        +estaVivo(): boolean
+        +receberDano(danoBruto: int): int
+        +curar(quantidade: int): void
+        +aumentarAtaque(valor: int): void
+        +aumentarDefesa(valor: int): void
+    }
+    abstract class Personagem {
+        {static} -ENERGIA_MAXIMA: int = 20
+        {static} -ATAQUE_BASICO: Habilidade
+        -energia: int
+        -habilidades: List<Habilidade> {readOnly}
+        -inventario: Inventario {readOnly}
+        --
+        #Personagem(nome: String, vida: int, ataque: int, defesa: int, habilidadeEspecial: Habilidade)
+        {abstract} +getClasse(): String
+        +gastarEnergia(custo: int): boolean
+        +recuperarEnergia(valor: int): void
+        +getEnergia(): int
+        +getEnergiaMaxima(): int
+        +getHabilidades(): List<Habilidade>
+        +getInventario(): Inventario
+    }
+    class Guerreiro {
+        +Guerreiro(nome: String)
+        +getClasse(): String
+    }
+    class Mago {
+        +Mago(nome: String)
+        +getClasse(): String
+    }
+    class Arqueiro {
+        +Arqueiro(nome: String)
+        +getClasse(): String
+    }
+    class Inimigo {
+        -habilidade: Habilidade {readOnly}
+        --
+        +Inimigo(nome: String, vida: int, ataque: int, defesa: int, habilidade: Habilidade)
+        +agir(alvo: Alvo): String
+    }
+    class FabricaDePersonagens {
+        {static} -CLASSES: Map<String, Function<String, Personagem>>
+        --
+        -FabricaDePersonagens()
+        {static} +classesDisponiveis(): List<String>
+        {static} +criar(classe: String, nome: String): Personagem
+    }
+}
+
+package rpg.ui {
+    interface InterfaceJogo {
+        +mostrar(mensagem: String): void
+        +lerTexto(pergunta: String): String
+        +lerOpcao(pergunta: String, min: int, max: int): int
+    }
+    class ConsoleUI {
+        -scanner: Scanner {readOnly}
+        -saida: PrintStream {readOnly}
+        --
+        +mostrar(mensagem: String): void
+        +lerTexto(pergunta: String): String
+        +lerOpcao(pergunta: String, min: int, max: int): int
+        -perguntar(pergunta: String): String
+    }
+}
+
+package rpg {
+    class Main {
+        {static} +main(args: String[]): void
+    }
+    class Jogo {
+        {static} -PERCENTUAL_CURA_DESCANSO: double = 0.20
+        {static} -ENERGIA_DESCANSO: int = 6
+        {static} -CURA_INICIAL: int = 40
+        {static} -ENERGIA_INICIAL: int = 10
+        -ui: InterfaceJogo {readOnly}
+        -fases: List<Fase> {readOnly}
+        --
+        +Jogo(ui: InterfaceJogo, fases: List<Fase>)
+        +iniciar(): void
+        -criarPersonagem(): Personagem
+        -entregarItensIniciais(jogador: Personagem): void
+        -receberRecompensas(jogador: Personagem, fase: Fase): void
+        -descansar(jogador: Personagem): void
+    }
+    class Fase <<record>> {
+        +inimigo: Oponente
+        +recompensas: List<Item>
+        --
+        +inimigo(): Oponente
+        +recompensas(): List<Item>
+    }
+    class FabricaDeFases {
+        -FabricaDeFases()
+        {static} +criarFases(): List<Fase>
+    }
+}
+
+Combatente <|-- Personagem
+Combatente <|-- Inimigo
+Personagem <|-- Guerreiro
+Personagem <|-- Mago
+Personagem <|-- Arqueiro
+Atacante <|-- Oponente
+Alvo <|-- Oponente
+Atacante <|.. Combatente
+Alvo <|.. Combatente
+Oponente <|.. Inimigo
+Habilidade <|.. HabilidadeDeDano
+Item <|.. PocaoDeCura
+Item <|.. PocaoDeEnergia
+Item <|.. Equipamento
+InterfaceJogo <|.. ConsoleUI
+Personagem *-- Inventario
+Inventario o-- Item
+Personagem o-- Habilidade
+Inimigo o-- Habilidade
+Fase o-- Oponente
+Combate ..> Personagem
+Combate ..> Oponente
+Combate ..> InterfaceJogo
+Jogo ..> Combate
+Jogo ..> Fase
+Jogo ..> FabricaDePersonagens
+Jogo ..> InterfaceJogo
+FabricaDeFases ..> Fase
+FabricaDePersonagens ..> Personagem
+Main ..> Jogo
+Main ..> ConsoleUI
+Item ..> Personagem
+Habilidade ..> Atacante
+Habilidade ..> Alvo
+
+@enduml

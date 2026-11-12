@@ -2,6 +2,7 @@
 
 Jogo de RPG por turnos em modo console, desenvolvido em **Java** para a disciplina de **Paradigmas de Programação**. O objetivo do projeto é aplicar Programação Orientada a Objetos (abstração, encapsulamento, herança e polimorfismo) e os 5 princípios **SOLID**.
 
+**Autor:** SEU NOME COMPLETO
 
 ---
 
@@ -139,15 +140,22 @@ O herói começa com 2 Poções de Cura (+40 de vida) e 1 Poção de Energia (+1
 
 ---
 
-## Diagrama de classes
 
-![Diagrama de classes](docs/img/diagrama-classes.png)
+### Versão no estilo Mermaid
 
-O diagrama mostra **todas as classes e interfaces, com seus atributos, construtores e métodos**, agrupadas por pacote. Há também uma versão vetorial (zoom sem perder qualidade) em `docs/img/diagrama-classes.svg`.
+Mesmo diagrama, em Mermaid: caixas coloridas por tipo (interfaces, classes abstratas, heróis, inimigo, itens, habilidades, orquestração e interface de console) e setas com rótulos (*herda*, *implementa*, *possui*, *contém*, *usa*).
 
-**Legenda:** seta cheia com ponta vazada = herança (`extends`) · seta tracejada com ponta vazada = implementação de interface (`implements`) · losango preenchido = composição · losango vazado = agregação · seta tracejada aberta = dependência/uso.
+![Diagrama de classes no estilo Mermaid](docs/img/diagrama-classes-mermaid.png)
 
-O arquivo `docs/diagrama-classes.dot` contém o código-fonte do diagrama (Graphviz). Para regenerar a imagem: `dot -Tpng docs/diagrama-classes.dot -o docs/img/diagrama-classes.png`.
+### Código-fonte do diagrama
+
+O diagrama está disponível como código, em três formatos (todos com as mesmas classes, atributos e métodos):
+
+| Arquivo | Formato | Como usar |
+|---|---|---|
+| `docs/diagrama-classes.mmd` | Mermaid (com cores e rótulos) | Colar em [mermaid.live](https://mermaid.live) para ver e exportar. |
+| `docs/diagrama-classes.puml` | PlantUML | Colar em [plantuml.com/plantuml](https://www.plantuml.com/plantuml) para ver e exportar. |
+| `docs/diagrama-classes.dot` | Graphviz | `dot -Tpng docs/diagrama-classes.dot -o docs/img/diagrama-classes.png` |
 
 ---
 
@@ -270,7 +278,9 @@ rpg-console/
 │           ├── InterfaceJogo.java
 │           └── ConsoleUI.java
 ├── docs/
-│   ├── diagrama-classes.dot
+│   ├── diagrama-classes.mmd      (código Mermaid)
+│   ├── diagrama-classes.puml     (código PlantUML)
+│   ├── diagrama-classes.dot      (código Graphviz)
 │   └── img/            (diagrama e capturas de tela)
 ├── executar.sh
 ├── executar.bat
