@@ -2,6 +2,8 @@
 title: Diagrama de Classes UML - RPG em Console
 config:
   theme: base
+  layout: elk
+  fontFamily: Arial, Helvetica, sans-serif
   themeVariables:
     fontFamily: Arial, Helvetica, sans-serif
     fontSize: 14px
@@ -11,8 +13,7 @@ config:
 classDiagram
     direction TB
 
-
-    %% ===== pacote rpg.combate =====
+    %% ===== pacote rpg.combate (contratos) =====
     class Atacante {
         <<interface>>
         +getNome() String
@@ -30,19 +31,6 @@ classDiagram
         <<interface>>
         +agir(Alvo alvo) String
     }
-    class Combate {
-        -ENERGIA_POR_TURNO int$
-        -jogador Personagem
-        -oponente Oponente
-        -ui InterfaceJogo
-        +Combate(Personagem jogador, Oponente oponente, InterfaceJogo ui)
-        +executar() boolean
-        -mostrarStatus() void
-        -barra(int atual, int maximo) String
-        -turnoDoJogador() void
-        -menuHabilidades() boolean
-        -menuItens() boolean
-    }
 
     %% ===== pacote rpg.habilidades =====
     class Habilidade {
@@ -52,62 +40,24 @@ classDiagram
         +usar(Atacante usuario, Alvo alvo) String
     }
     class HabilidadeDeDano {
-        -nome String
-        -custo int
-        -multiplicador double
-        -golpes int
+        -nome : String
+        -custo : int
+        -multiplicador : double
+        -golpes : int
         +HabilidadeDeDano(String nome, int custo, double multiplicador, int golpes)
         +getNome() String
         +getCusto() int
         +usar(Atacante usuario, Alvo alvo) String
     }
 
-    %% ===== pacote rpg.itens =====
-    class Item {
-        <<interface>>
-        +getNome() String
-        +getDescricao() String
-        +usar(Personagem dono) String
-    }
-    class PocaoDeCura {
-        -cura int
-        +PocaoDeCura(int cura)
-        +getNome() String
-        +getDescricao() String
-        +usar(Personagem dono) String
-    }
-    class PocaoDeEnergia {
-        -energia int
-        +PocaoDeEnergia(int energia)
-        +getNome() String
-        +getDescricao() String
-        +usar(Personagem dono) String
-    }
-    class Equipamento {
-        -nome String
-        -bonusAtaque int
-        -bonusDefesa int
-        +Equipamento(String nome, int bonusAtaque, int bonusDefesa)
-        +getNome() String
-        +getDescricao() String
-        +usar(Personagem dono) String
-    }
-    class Inventario {
-        -itens List~Item~
-        +adicionar(Item item) void
-        +remover(int indice) Item
-        +estaVazio() boolean
-        +listar() List~Item~
-    }
-
     %% ===== pacote rpg.personagens =====
     class Combatente {
         <<abstract>>
-        -nome String
-        -vidaMaxima int
-        -vida int
-        -ataque int
-        -defesa int
+        -nome : String
+        -vidaMaxima : int
+        -vida : int
+        -ataque : int
+        -defesa : int
         #Combatente(String nome, int vida, int ataque, int defesa)
         +getNome() String
         +getVida() int
@@ -122,11 +72,11 @@ classDiagram
     }
     class Personagem {
         <<abstract>>
-        -ENERGIA_MAXIMA int$
-        -ATAQUE_BASICO Habilidade$
-        -energia int
-        -habilidades List~Habilidade~
-        -inventario Inventario
+        -ENERGIA_MAXIMA : int$
+        -ATAQUE_BASICO : Habilidade$
+        -energia : int
+        -habilidades : List~Habilidade~
+        -inventario : Inventario
         #Personagem(String nome, int vida, int ataque, int defesa, Habilidade habilidadeEspecial)
         +getClasse() String*
         +gastarEnergia(int custo) boolean
@@ -149,15 +99,101 @@ classDiagram
         +getClasse() String
     }
     class Inimigo {
-        -habilidade Habilidade
+        -habilidade : Habilidade
         +Inimigo(String nome, int vida, int ataque, int defesa, Habilidade habilidade)
         +agir(Alvo alvo) String
     }
     class FabricaDePersonagens {
-        -CLASSES Map~String, Function~String, Personagem~~$
+        -CLASSES : Map#lt;String, Function#lt;String, Personagem#gt;#gt;$
         -FabricaDePersonagens()
         +classesDisponiveis() List~String~$
         +criar(String classe, String nome) Personagem$
+    }
+
+
+    direction TB
+
+    %% ===== pacote rpg =====
+    class Main {
+        +main(String[] args) void$
+    }
+    class Jogo {
+        -PERCENTUAL_CURA_DESCANSO : double$
+        -ENERGIA_DESCANSO : int$
+        -CURA_INICIAL : int$
+        -ENERGIA_INICIAL : int$
+        -ui : InterfaceJogo
+        -fases : List~Fase~
+        +Jogo(InterfaceJogo ui, List~Fase~ fases)
+        +iniciar() void
+        -criarPersonagem() Personagem
+        -entregarItensIniciais(Personagem jogador) void
+        -receberRecompensas(Personagem jogador, Fase fase) void
+        -descansar(Personagem jogador) void
+    }
+    class Fase {
+        <<record>>
+        -inimigo : Oponente
+        -recompensas : List~Item~
+        +inimigo() Oponente
+        +recompensas() List~Item~
+    }
+    class FabricaDeFases {
+        -FabricaDeFases()
+        +criarFases() List~Fase~$
+    }
+
+    %% ===== pacote rpg.combate =====
+    class Combate {
+        -ENERGIA_POR_TURNO : int$
+        -jogador : Personagem
+        -oponente : Oponente
+        -ui : InterfaceJogo
+        +Combate(Personagem jogador, Oponente oponente, InterfaceJogo ui)
+        +executar() boolean
+        -mostrarStatus() void
+        -barra(int atual, int maximo) String
+        -turnoDoJogador() void
+        -menuHabilidades() boolean
+        -menuItens() boolean
+    }
+
+    %% ===== pacote rpg.itens =====
+    class Item {
+        <<interface>>
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class PocaoDeCura {
+        -cura : int
+        +PocaoDeCura(int cura)
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class PocaoDeEnergia {
+        -energia : int
+        +PocaoDeEnergia(int energia)
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class Equipamento {
+        -nome : String
+        -bonusAtaque : int
+        -bonusDefesa : int
+        +Equipamento(String nome, int bonusAtaque, int bonusDefesa)
+        +getNome() String
+        +getDescricao() String
+        +usar(Personagem dono) String
+    }
+    class Inventario {
+        -itens : List~Item~
+        +adicionar(Item item) void
+        +remover(int indice) Item
+        +estaVazio() boolean
+        +listar() List~Item~
     }
 
     %% ===== pacote rpg.ui =====
@@ -168,56 +204,20 @@ classDiagram
         +lerOpcao(String pergunta, int min, int max) int
     }
     class ConsoleUI {
-        -scanner Scanner
-        -saida PrintStream
+        -scanner : Scanner
+        -saida : PrintStream
         +mostrar(String mensagem) void
         +lerTexto(String pergunta) String
         +lerOpcao(String pergunta, int min, int max) int
         -perguntar(String pergunta) String
     }
 
-    %% ===== pacote rpg =====
-    class Main {
-        +main(String[] args) void$
-    }
-    class Jogo {
-        -PERCENTUAL_CURA_DESCANSO double$
-        -ENERGIA_DESCANSO int$
-        -CURA_INICIAL int$
-        -ENERGIA_INICIAL int$
-        -ui InterfaceJogo
-        -fases List~Fase~
-        +Jogo(InterfaceJogo ui, List~Fase~ fases)
-        +iniciar() void
-        -criarPersonagem() Personagem
-        -entregarItensIniciais(Personagem jogador) void
-        -receberRecompensas(Personagem jogador, Fase fase) void
-        -descansar(Personagem jogador) void
-    }
-    class Fase {
-        <<record>>
-        +inimigo Oponente
-        +recompensas List~Item~
-        +inimigo() Oponente
-        +recompensas() List~Item~
-    }
-    class FabricaDeFases {
-        -FabricaDeFases()
-        +criarFases() List~Fase~$
-    }
-
     %% ===== cores por tipo =====
     style Atacante fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
     style Alvo fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
     style Oponente fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
-    style Combate fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
     style Habilidade fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
     style HabilidadeDeDano fill:#fefce8,stroke:#eab308,stroke-width:2px,color:#1f2937
-    style Item fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
-    style PocaoDeCura fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
-    style PocaoDeEnergia fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
-    style Equipamento fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
-    style Inventario fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
     style Combatente fill:#fdf4ff,stroke:#d946ef,stroke-width:2px,color:#1f2937
     style Personagem fill:#fdf4ff,stroke:#d946ef,stroke-width:2px,color:#1f2937
     style Guerreiro fill:#f0fdfa,stroke:#2dd4bf,stroke-width:2px,color:#1f2937
@@ -225,45 +225,71 @@ classDiagram
     style Arqueiro fill:#f0fdfa,stroke:#2dd4bf,stroke-width:2px,color:#1f2937
     style Inimigo fill:#ecfeff,stroke:#22d3ee,stroke-width:2px,color:#1f2937
     style FabricaDePersonagens fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
-    style InterfaceJogo fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
-    style ConsoleUI fill:#f1f5f9,stroke:#94a3b8,stroke-width:2px,color:#1f2937
     style Main fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
     style Jogo fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
     style Fase fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
     style FabricaDeFases fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style Combate fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    style Item fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style PocaoDeCura fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style PocaoDeEnergia fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style Equipamento fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style Inventario fill:#fff7ed,stroke:#fb923c,stroke-width:2px,color:#1f2937
+    style InterfaceJogo fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style ConsoleUI fill:#f1f5f9,stroke:#94a3b8,stroke-width:2px,color:#1f2937
 
     %% ===== relacionamentos =====
-    Combatente <|-- Personagem : herda
-    Combatente <|-- Inimigo : herda
-    Personagem <|-- Guerreiro : herda
-    Personagem <|-- Mago : herda
-    Personagem <|-- Arqueiro : herda
     Atacante <|-- Oponente : herda
     Alvo <|-- Oponente : herda
     Atacante <|.. Combatente : implementa
     Alvo <|.. Combatente : implementa
+    Combatente <|-- Personagem : herda
+    Combatente <|-- Inimigo : herda
     Oponente <|.. Inimigo : implementa
+    Personagem <|-- Guerreiro : herda
+    Personagem <|-- Mago : herda
+    Personagem <|-- Arqueiro : herda
     Habilidade <|.. HabilidadeDeDano : implementa
+    Personagem *-- Inventario : possui
+    Personagem o-- Habilidade : contém
+    Inimigo o-- Habilidade : contém
+    Habilidade ..> Atacante : usa
+    Habilidade ..> Alvo : usa
+    Personagem ..> HabilidadeDeDano : cria
+    Guerreiro ..> HabilidadeDeDano : cria
+    Mago ..> HabilidadeDeDano : cria
+    Arqueiro ..> HabilidadeDeDano : cria
+    FabricaDePersonagens ..> Personagem : usa
+    FabricaDePersonagens ..> Guerreiro : cria
+    FabricaDePersonagens ..> Mago : cria
+    FabricaDePersonagens ..> Arqueiro : cria
     Item <|.. PocaoDeCura : implementa
     Item <|.. PocaoDeEnergia : implementa
     Item <|.. Equipamento : implementa
     InterfaceJogo <|.. ConsoleUI : implementa
-    Personagem *-- Inventario : possui
     Inventario o-- Item : contém
-    Personagem o-- Habilidade : contém
-    Inimigo o-- Habilidade : contém
     Fase o-- Oponente : contém
+    Fase o-- Item : contém
+    Item ..> Personagem : usa
+    Main ..> Jogo : usa
+    Main ..> FabricaDeFases : usa
+    Main ..> ConsoleUI : cria
+    Main ..> InterfaceJogo : usa
+    Jogo ..> InterfaceJogo : usa
+    Jogo ..> Fase : usa
+    Jogo ..> Combate : usa
+    Jogo ..> FabricaDePersonagens : usa
+    Jogo ..> Personagem : usa
+    Jogo ..> PocaoDeCura : cria
+    Jogo ..> PocaoDeEnergia : cria
     Combate ..> Personagem : usa
     Combate ..> Oponente : usa
     Combate ..> InterfaceJogo : usa
-    Jogo ..> Combate : usa
-    Jogo ..> Fase : usa
-    Jogo ..> FabricaDePersonagens : usa
-    Jogo ..> InterfaceJogo : usa
-    FabricaDeFases ..> Fase : usa
-    FabricaDePersonagens ..> Personagem : usa
-    Main ..> Jogo : usa
-    Main ..> ConsoleUI : usa
-    Item ..> Personagem : usa
-    Habilidade ..> Atacante : usa
-    Habilidade ..> Alvo : usa
+    Combate ..> Habilidade : usa
+    Combate ..> Item : usa
+    FabricaDeFases ..> Fase : cria
+    FabricaDeFases ..> Inimigo : cria
+    FabricaDeFases ..> HabilidadeDeDano : cria
+    FabricaDeFases ..> Equipamento : cria
+    FabricaDeFases ..> PocaoDeCura : cria
+    FabricaDeFases ..> PocaoDeEnergia : cria

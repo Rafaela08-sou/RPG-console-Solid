@@ -141,19 +141,31 @@ O herói começa com 2 Poções de Cura (+40 de vida) e 1 Poção de Energia (+1
 ---
 
 
-### Versão no estilo Mermaid
+## Diagrama de classes
 
-Mesmo diagrama, em Mermaid: caixas coloridas por tipo (interfaces, classes abstratas, heróis, inimigo, itens, habilidades, orquestração e interface de console) e setas com rótulos (*herda*, *implementa*, *possui*, *contém*, *usa*).
+O diagrama UML (em Mermaid) está dividido em **duas partes** para facilitar a leitura. Juntas, elas têm as mesmas classes, atributos, métodos e relacionamentos do diagrama completo. Caixas coloridas por tipo (interfaces, classes abstratas, heróis, inimigo, itens, habilidades, orquestração e interface de console) e setas com rótulos (*herda*, *implementa*, *possui*, *contém*, *usa*, *cria*). Caixas **tracejadas e esmaecidas** são classes que aparecem só pelo nome porque pertencem à outra parte.
 
-![Diagrama de classes no estilo Mermaid](docs/img/diagrama-classes-mermaid.png)
+### Parte 1: personagens, inimigo e habilidades
+
+![Diagrama de classes, parte 1](docs/img/diagrama-classes-parte1.png)
+
+### Parte 2: itens, combate e fluxo do jogo
+
+![Diagrama de classes, parte 2](docs/img/diagrama-classes-parte2.png)
+
+### Diagrama completo (uma imagem só)
+
+[Ver diagrama completo](docs/img/diagrama-classes-mermaid.svg) (SVG vetorial, dá para ampliar sem perder qualidade).
 
 ### Código-fonte do diagrama
 
-O diagrama está disponível como código, em três formatos (todos com as mesmas classes, atributos e métodos):
+O diagrama está disponível como código. Os arquivos Mermaid usam o layout `elk`, que é aceito pelo [mermaid.live](https://mermaid.live) e pelo `mermaid-cli` atual:
 
 | Arquivo | Formato | Como usar |
 |---|---|---|
-| `docs/diagrama-classes.mmd` | Mermaid (com cores e rótulos) | Colar em [mermaid.live](https://mermaid.live) para ver e exportar. |
+| `docs/diagrama-classes-parte1.mmd` | Mermaid, parte 1 | Colar em [mermaid.live](https://mermaid.live) para ver e exportar. |
+| `docs/diagrama-classes-parte2.mmd` | Mermaid, parte 2 | Colar em [mermaid.live](https://mermaid.live) para ver e exportar. |
+| `docs/diagrama-classes.mmd` | Mermaid, completo (partes 1 e 2 juntas) | Colar em [mermaid.live](https://mermaid.live) para ver e exportar. |
 | `docs/diagrama-classes.puml` | PlantUML | Colar em [plantuml.com/plantuml](https://www.plantuml.com/plantuml) para ver e exportar. |
 | `docs/diagrama-classes.dot` | Graphviz | `dot -Tpng docs/diagrama-classes.dot -o docs/img/diagrama-classes.png` |
 
@@ -278,7 +290,9 @@ rpg-console/
 │           ├── InterfaceJogo.java
 │           └── ConsoleUI.java
 ├── docs/
-│   ├── diagrama-classes.mmd      (código Mermaid)
+│   ├── diagrama-classes.mmd          (código Mermaid, completo)
+│   ├── diagrama-classes-parte1.mmd   (código Mermaid, parte 1)
+│   ├── diagrama-classes-parte2.mmd   (código Mermaid, parte 2)
 │   ├── diagrama-classes.puml     (código PlantUML)
 │   ├── diagrama-classes.dot      (código Graphviz)
 │   └── img/            (diagrama e capturas de tela)

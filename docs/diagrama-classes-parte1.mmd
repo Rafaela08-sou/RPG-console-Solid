@@ -1,0 +1,156 @@
+---
+title: Diagrama de Classes UML - Parte 1 de 2 - Personagens, inimigo e habilidades
+config:
+  theme: base
+  layout: elk
+  fontFamily: Arial, Helvetica, sans-serif
+  themeVariables:
+    fontFamily: Arial, Helvetica, sans-serif
+    fontSize: 14px
+    lineColor: '#1f2937'
+    primaryTextColor: '#1f2937'
+---
+classDiagram
+    direction TB
+
+    %% ===== pacote rpg.combate (contratos) =====
+    class Atacante {
+        <<interface>>
+        +getNome() String
+        +getAtaque() int
+    }
+    class Alvo {
+        <<interface>>
+        +getNome() String
+        +getVida() int
+        +getVidaMaxima() int
+        +estaVivo() boolean
+        +receberDano(int danoBruto) int
+    }
+    class Oponente {
+        <<interface>>
+        +agir(Alvo alvo) String
+    }
+
+    %% ===== pacote rpg.habilidades =====
+    class Habilidade {
+        <<interface>>
+        +getNome() String
+        +getCusto() int
+        +usar(Atacante usuario, Alvo alvo) String
+    }
+    class HabilidadeDeDano {
+        -nome : String
+        -custo : int
+        -multiplicador : double
+        -golpes : int
+        +HabilidadeDeDano(String nome, int custo, double multiplicador, int golpes)
+        +getNome() String
+        +getCusto() int
+        +usar(Atacante usuario, Alvo alvo) String
+    }
+
+    %% ===== pacote rpg.personagens =====
+    class Combatente {
+        <<abstract>>
+        -nome : String
+        -vidaMaxima : int
+        -vida : int
+        -ataque : int
+        -defesa : int
+        #Combatente(String nome, int vida, int ataque, int defesa)
+        +getNome() String
+        +getVida() int
+        +getVidaMaxima() int
+        +getAtaque() int
+        +getDefesa() int
+        +estaVivo() boolean
+        +receberDano(int danoBruto) int
+        +curar(int quantidade) void
+        +aumentarAtaque(int valor) void
+        +aumentarDefesa(int valor) void
+    }
+    class Personagem {
+        <<abstract>>
+        -ENERGIA_MAXIMA : int$
+        -ATAQUE_BASICO : Habilidade$
+        -energia : int
+        -habilidades : List~Habilidade~
+        -inventario : Inventario
+        #Personagem(String nome, int vida, int ataque, int defesa, Habilidade habilidadeEspecial)
+        +getClasse() String*
+        +gastarEnergia(int custo) boolean
+        +recuperarEnergia(int valor) void
+        +getEnergia() int
+        +getEnergiaMaxima() int
+        +getHabilidades() List~Habilidade~
+        +getInventario() Inventario
+    }
+    class Guerreiro {
+        +Guerreiro(String nome)
+        +getClasse() String
+    }
+    class Mago {
+        +Mago(String nome)
+        +getClasse() String
+    }
+    class Arqueiro {
+        +Arqueiro(String nome)
+        +getClasse() String
+    }
+    class Inimigo {
+        -habilidade : Habilidade
+        +Inimigo(String nome, int vida, int ataque, int defesa, Habilidade habilidade)
+        +agir(Alvo alvo) String
+    }
+    class FabricaDePersonagens {
+        -CLASSES : Map#lt;String, Function#lt;String, Personagem#gt;#gt;$
+        -FabricaDePersonagens()
+        +classesDisponiveis() List~String~$
+        +criar(String classe, String nome) Personagem$
+    }
+
+    %% ===== classe da Parte 2 (só o nome; detalhes no diagrama da Parte 2) =====
+    class Inventario
+
+    %% ===== cores por tipo =====
+    style Atacante fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style Alvo fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style Oponente fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style Habilidade fill:#eef2ff,stroke:#818cf8,stroke-width:2px,color:#1f2937
+    style HabilidadeDeDano fill:#fefce8,stroke:#eab308,stroke-width:2px,color:#1f2937
+    style Combatente fill:#fdf4ff,stroke:#d946ef,stroke-width:2px,color:#1f2937
+    style Personagem fill:#fdf4ff,stroke:#d946ef,stroke-width:2px,color:#1f2937
+    style Guerreiro fill:#f0fdfa,stroke:#2dd4bf,stroke-width:2px,color:#1f2937
+    style Mago fill:#f0fdfa,stroke:#2dd4bf,stroke-width:2px,color:#1f2937
+    style Arqueiro fill:#f0fdfa,stroke:#2dd4bf,stroke-width:2px,color:#1f2937
+    style Inimigo fill:#ecfeff,stroke:#22d3ee,stroke-width:2px,color:#1f2937
+    style FabricaDePersonagens fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#1f2937
+    %% classe da Parte 2: tracejada e esmaecida
+    style Inventario fill:#fff7ed,stroke:#fb923c,stroke-width:2px,stroke-dasharray:5 4,color:#6b7280
+
+    %% ===== relacionamentos =====
+    Atacante <|-- Oponente : herda
+    Alvo <|-- Oponente : herda
+    Atacante <|.. Combatente : implementa
+    Alvo <|.. Combatente : implementa
+    Combatente <|-- Personagem : herda
+    Combatente <|-- Inimigo : herda
+    Oponente <|.. Inimigo : implementa
+    Personagem <|-- Guerreiro : herda
+    Personagem <|-- Mago : herda
+    Personagem <|-- Arqueiro : herda
+    Habilidade <|.. HabilidadeDeDano : implementa
+    Personagem *-- Inventario : possui
+    Personagem o-- Habilidade : contém
+    Inimigo o-- Habilidade : contém
+    Habilidade ..> Atacante : usa
+    Habilidade ..> Alvo : usa
+    Personagem ..> HabilidadeDeDano : cria
+    Guerreiro ..> HabilidadeDeDano : cria
+    Mago ..> HabilidadeDeDano : cria
+    Arqueiro ..> HabilidadeDeDano : cria
+    FabricaDePersonagens ..> Personagem : usa
+    FabricaDePersonagens ..> Guerreiro : cria
+    FabricaDePersonagens ..> Mago : cria
+    FabricaDePersonagens ..> Arqueiro : cria

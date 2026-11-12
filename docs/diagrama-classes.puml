@@ -198,8 +198,8 @@ package rpg {
         -descansar(jogador: Personagem): void
     }
     class Fase <<record>> {
-        +inimigo: Oponente
-        +recompensas: List<Item>
+        -inimigo: Oponente {readOnly}
+        -recompensas: List<Item> {readOnly}
         --
         +inimigo(): Oponente
         +recompensas(): List<Item>
@@ -230,17 +230,37 @@ Inventario o-- Item
 Personagem o-- Habilidade
 Inimigo o-- Habilidade
 Fase o-- Oponente
+Fase o-- Item
 Combate ..> Personagem
 Combate ..> Oponente
 Combate ..> InterfaceJogo
+Combate ..> Habilidade
+Combate ..> Item
 Jogo ..> Combate
 Jogo ..> Fase
 Jogo ..> FabricaDePersonagens
 Jogo ..> InterfaceJogo
-FabricaDeFases ..> Fase
+Jogo ..> Personagem
+Jogo ..> PocaoDeCura : <<create>>
+Jogo ..> PocaoDeEnergia : <<create>>
+FabricaDeFases ..> Fase : <<create>>
+FabricaDeFases ..> Inimigo : <<create>>
+FabricaDeFases ..> HabilidadeDeDano : <<create>>
+FabricaDeFases ..> Equipamento : <<create>>
+FabricaDeFases ..> PocaoDeCura : <<create>>
+FabricaDeFases ..> PocaoDeEnergia : <<create>>
 FabricaDePersonagens ..> Personagem
+FabricaDePersonagens ..> Guerreiro : <<create>>
+FabricaDePersonagens ..> Mago : <<create>>
+FabricaDePersonagens ..> Arqueiro : <<create>>
+Personagem ..> HabilidadeDeDano : <<create>>
+Guerreiro ..> HabilidadeDeDano : <<create>>
+Mago ..> HabilidadeDeDano : <<create>>
+Arqueiro ..> HabilidadeDeDano : <<create>>
 Main ..> Jogo
-Main ..> ConsoleUI
+Main ..> FabricaDeFases
+Main ..> ConsoleUI : <<create>>
+Main ..> InterfaceJogo
 Item ..> Personagem
 Habilidade ..> Atacante
 Habilidade ..> Alvo
