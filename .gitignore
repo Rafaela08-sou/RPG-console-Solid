@@ -1,0 +1,8 @@
+# Arquivos gerados pela compilação
+out/
+fontes.txt
+
+# Arquivos da IDE
+.idea/
+*.iml
+.vscode/
